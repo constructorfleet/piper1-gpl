@@ -8,6 +8,15 @@ Install with:
 pip install piper-tts
 ```
 
+## Docker
+
+To build a CUDA-enabled image, pass the GPU runtime package at build time:
+
+``` sh
+docker build --build-arg PIPER_ONNXRUNTIME_PACKAGE=onnxruntime-gpu -t piper .
+docker run --gpus all piper speak --cuda -m en_US-lessac-medium -- "Hello!"
+```
+
 * 🎧 [Samples][samples]
 * 💡 [Demo][demo]
 * 🗣️ [Voices][voices]
