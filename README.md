@@ -17,6 +17,8 @@ docker build --build-arg PIPER_ONNXRUNTIME_PACKAGE=onnxruntime-gpu -t piper .
 docker run --gpus all piper speak --cuda -m en_US-lessac-medium -- "Hello!"
 ```
 
+The container workflow also publishes a GPU image alongside the default CPU image.
+
 * 🎧 [Samples][samples]
 * 💡 [Demo][demo]
 * 🗣️ [Voices][voices]

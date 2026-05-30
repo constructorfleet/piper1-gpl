@@ -1,4 +1,8 @@
-FROM python:3.12 AS builder
+ARG BUILD_IMAGE=python:3.12
+ARG RUNTIME_IMAGE=python:3.12-slim
+ARG RUNTIME_APT_PACKAGES=
+
+FROM ${BUILD_IMAGE} AS builder
 
 ARG PIPER_ONNXRUNTIME_PACKAGE=onnxruntime
 ENV PIPER_ONNXRUNTIME_PACKAGE=${PIPER_ONNXRUNTIME_PACKAGE}
@@ -18,14 +22,19 @@ RUN script/package
 
 # -----------------------------------------------------------------------------
 
-FROM python:3.12-slim
+FROM ${RUNTIME_IMAGE}
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 WORKDIR /app
+RUN if [ -n "${RUNTIME_APT_PACKAGES}" ]; then \
+      apt-get update && \
+      apt-get install --yes --no-install-recommends ${RUNTIME_APT_PACKAGES} && \
+      rm -rf /var/lib/apt/lists/*; \
+    fi
 COPY --from=builder /app/dist/piper_tts-*linux*.whl ./dist/
-RUN pip3 install ./dist/piper_tts-*linux*.whl
-RUN pip3 install 'flask>=3,<4'
+RUN python3 -m pip install ./dist/piper_tts-*linux*.whl
+RUN python3 -m pip install 'flask>=3,<4'
 
 COPY docker/entrypoint.sh /
 

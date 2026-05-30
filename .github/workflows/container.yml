@@ -13,6 +13,17 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        include:
+          - image_suffix: ""
+            runtime_image: python:3.12-slim
+            runtime_apt_packages: ""
+            onnxruntime_package: onnxruntime
+          - image_suffix: -gpu
+            runtime_image: nvidia/cuda:12.9.2-cudnn-runtime-ubuntu24.04
+            runtime_apt_packages: python3 python3-pip
+            onnxruntime_package: onnxruntime-gpu
     steps:
       - uses: actions/checkout@v4
 
@@ -27,7 +38,7 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}${{ matrix.image_suffix }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,format=short
@@ -37,5 +48,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          build-args: |
+            PIPER_ONNXRUNTIME_PACKAGE=${{ matrix.onnxruntime_package }}
+            RUNTIME_IMAGE=${{ matrix.runtime_image }}
+            RUNTIME_APT_PACKAGES=${{ matrix.runtime_apt_packages }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
