@@ -1,6 +1,7 @@
 """Needed so package data is included."""
 
 import itertools
+import os
 from pathlib import Path
 
 from skbuild import setup
@@ -21,6 +22,11 @@ TASHKEEL_DATA_FILES = [
         "hint_id_map.json",
     )
 ]
+
+
+def _onnxruntime_package() -> str:
+    package = os.environ.get("PIPER_ONNXRUNTIME_PACKAGE", "onnxruntime").strip()
+    return package or "onnxruntime"
 
 setup(
     name="piper-tts",
@@ -43,7 +49,7 @@ setup(
     ],
     python_requires=">=3.9",
     install_requires=[
-        "onnxruntime>=1,<2",
+        f"{_onnxruntime_package()}>=1,<2",
         "pathvalidate>=3,<4",
     ],
     extras_require={

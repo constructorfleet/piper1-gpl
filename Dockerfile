@@ -1,5 +1,8 @@
 FROM python:3.12 AS builder
 
+ARG PIPER_ONNXRUNTIME_PACKAGE=onnxruntime
+ENV PIPER_ONNXRUNTIME_PACKAGE=${PIPER_ONNXRUNTIME_PACKAGE}
+
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
       build-essential cmake ninja-build git
